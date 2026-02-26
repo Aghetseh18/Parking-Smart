@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python (for ocr_service)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+.env/
+
+# ESP32 / PlatformIO / Arduino (for esp32)
+.pio/
+.vscode/
+*.bin
+*.elf
+*.map
+*.hex
+*.a
+*.o
+
+# Custom project files
+uploads/
+eng.traineddata
+*.log
