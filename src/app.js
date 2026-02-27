@@ -42,14 +42,18 @@ app.use('/api/dashboard', dashboardRoutes);
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 // Database Connection
-sequelize.sync({ alter: true })
-    .then(() => {
-        console.log('PostgreSQL Database Connected & Synced');
-        startExpiryJob();
-    })
-    .catch(err => {
-        console.error('PostgreSQL connection error:', err);
-    });
+if (process.env.NODE_ENV !== 'test') {
+    sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
+        .then(() => {
+            console.log('PostgreSQL Database Connected & Synced');
+            if (!process.env.VERCEL) {
+                startExpiryJob();
+            }
+        })
+        .catch(err => {
+            console.error('PostgreSQL connection error:', err);
+        });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -58,9 +62,12 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`\n🚀 Parking Smart API running on http://localhost:${PORT}`);
-    console.log(`📖 Swagger docs at    http://localhost:${PORT}/api-docs\n`);
-});
+
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`\n🚀 Parking Smart API running on http://localhost:${PORT}`);
+        console.log(`📖 Swagger docs at    http://localhost:${PORT}/api-docs\n`);
+    });
+}
 
 module.exports = app;
