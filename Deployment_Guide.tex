@@ -129,6 +129,14 @@ Once both services are live:
     \item Verify backend health: Navigate to \texttt{https://your-api-url.vercel.app/health}.
     \item Verify Swagger docs: Navigate to \texttt{https://your-api-url.vercel.app/api-docs}.
     \item Access the Dashboard: Ensure it correctly fetches data from the Backend API URL.
+\section{Troubleshooting Vercel Crashes}
+If you encounter a \texttt{500: INTERNAL\_SERVER\_ERROR} or \texttt{FUNCTION\_INVOCATION\_FAILED}, check the following:
+
+\begin{itemize}
+    \item \textbf{Environment Variables:} Ensure \texttt{DB\_URI} is correctly set in the Vercel Dashboard. The backend cannot start without a valid database connection.
+    \item \textbf{Database Accessibility:} Ensure your PostgreSQL provider (e.g., Supabase) allows connections from all IP addresses OR specifically from Vercel's IP range.
+    \item \textbf{Serverless Timeouts:} The first run (\texttt{sequelize.sync}) might take longer than the default Vercel timeout. Ensure your database is initialized.
+    \item \textbf{Logs:} Use the \textbf{Logs} tab in the Vercel Dashboard to see the exact Node.js stack trace causing the crash.
 \end{itemize}
 
 \end{document}
