@@ -1,0 +1,134 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+% Define colors for code listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{\Huge Parking-Smart Deployment Guide \\ \Large Vercel Infrastructure Setup}
+\author{Technical Infrastructure Team}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This document outlines the professional deployment procedures for the Parking-Smart ecosystem on the Vercel platform. The system is split into two distinct deployments:
+\begin{enumerate}
+    \item \textbf{Backend API:} Node.js Express server located in the root directory.
+    \item \textbf{Frontend Dashboard:} Next.js application located in \texttt{/parking-smart-dashboard}.
+\end{enumerate}
+
+\section{Prerequisites}
+Before beginning the deployment, ensure the following are available:
+\begin{itemize}
+    \item A Vercel account (\url{https://vercel.com}).
+    \item A managed PostgreSQL database (e.g., Supabase, Neon, or Railway).
+    \item Your project repository hosted on GitHub, GitLab, or Bitbucket.
+\end{itemize}
+
+\section{Backend Deployment (Root API)}
+The backend is a Node.js Express application. Since it resides in the root of the repository, we use a \texttt{vercel.json} configuration to enable Serverless Functions.
+
+\subsection{Vercel Configuration}
+Ensure \texttt{vercel.json} exists in the root directory with the following content to enable CORS and Serverless mapping:
+\begin{lstlisting}[language=json]
+{
+  "version": 2,
+  "builds": [
+    { "src": "src/app.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/app.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
+      }
+    }
+  ]
+}
+\end{lstlisting}
+
+\subsection{Vercel Configuration}
+While Next.js is zero-config, we include a \texttt{vercel.json} for explicit project association:
+\begin{lstlisting}[language=json]
+{
+  "version": 2,
+  "framework": "nextjs"
+}
+\end{lstlisting}
+
+\subsection{Deployment Steps}
+\begin{enumerate}
+    \item Log in to the Vercel Dashboard and click \textbf{New Project}.
+    \item Import the \texttt{Parking-Smart} repository.
+    \item Ensure the \textbf{Root Directory} is set to \texttt{./} (the default).
+    \item In the \textbf{Environment Variables} section, add the following:
+    \begin{itemize}
+        \item \texttt{DB\_URI}: Your PostgreSQL connection string.
+        \item \texttt{PORT}: 3000 (Optional, Vercel sets this automatically).
+    \end{itemize}
+    \item Click \textbf{Deploy}.
+\end{enumerate}
+
+\section{Frontend Deployment (Dashboard)}
+The dashboard is a Next.js application. Vercel detects this automatically but requires the correct directory setting.
+
+\subsection{Deployment Steps}
+\begin{enumerate}
+    \item Click \textbf{New Project} in the Vercel Dashboard.
+    \item Import the same \texttt{Parking-Smart} repository.
+    \item \textbf{CRITICAL:} Set the \textbf{Root Directory} to \texttt{parking-smart-dashboard}.
+    \item Vercel will auto-detect the Next.js framework.
+    \item In \textbf{Environment Variables}, add:
+    \begin{itemize}
+        \item \texttt{NEXT\_PUBLIC\_API\_URL}: The URL of your deployed Backend API.
+    \end{itemize}
+    \item Click \textbf{Deploy}.
+\end{enumerate}
+
+\section{Post-Deployment Verification}
+Once both services are live:
+\begin{itemize}
+    \item Verify backend health: Navigate to \texttt{https://your-api-url.vercel.app/health}.
+    \item Verify Swagger docs: Navigate to \texttt{https://your-api-url.vercel.app/api-docs}.
+    \item Access the Dashboard: Ensure it correctly fetches data from the Backend API URL.
+\end{itemize}
+
+\end{document}
