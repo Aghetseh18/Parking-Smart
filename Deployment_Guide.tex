@@ -60,6 +60,23 @@ Before beginning the deployment, ensure the following are available:
     \item Your project repository hosted on GitHub, GitLab, or Bitbucket.
 \end{itemize}
 
+\section{External Database Provisioning}
+Since the backend is deployed as a set of Serverless Functions on Vercel, it cannot host a local persistent database. You \textbf{must} provision an external PostgreSQL instance.
+
+\subsection{Recommended Providers}
+\begin{itemize}
+    \item \textbf{Supabase:} Offers a generous free tier and easy-to-use GUI (\url{https://supabase.com}).
+    \item \textbf{Neon:} A serverless PostgreSQL built for scale (\url{https://neon.tech}).
+    \item \textbf{Railway:} Simple provisioning with a flat-fee or usage-based model (\url{https://railway.app}).
+\end{itemize}
+
+\subsection{Connection String Requirements}
+Once your database is created, obtain the \textbf{Connection URI}. It typically follows this format:
+\begin{center}
+    \texttt{postgres://user:password@host:port/dbname?sslmode=require}
+\end{center}
+\textbf{Important:} Ensure that \texttt{sslmode=require} is enabled, as most managed providers require SSL for secure connections from serverless environments.
+
 \section{Backend Deployment (Root API)}
 The backend is a Node.js Express application. Since it resides in the root of the repository, we use a \texttt{vercel.json} configuration to enable Serverless Functions.
 
@@ -101,7 +118,7 @@ While Next.js is zero-config, we include a \texttt{vercel.json} for explicit pro
     \item Ensure the \textbf{Root Directory} is set to \texttt{./} (the default).
     \item In the \textbf{Environment Variables} section, add the following:
     \begin{itemize}
-        \item \texttt{DB\_URI}: Your PostgreSQL connection string.
+        \item \texttt{DATABASE\_URL}: Your PostgreSQL connection string.
         \item \texttt{PORT}: 3000 (Optional, Vercel sets this automatically).
     \end{itemize}
     \item Click \textbf{Deploy}.
